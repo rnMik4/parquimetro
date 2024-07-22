@@ -1,13 +1,13 @@
 package com.techchallege.parquimetro.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.techchallege.parquimetro.services.validation.CriacaoCondutorValid;
+import jakarta.validation.constraints.Email;
 
 import java.time.LocalDateTime;
 
-@JsonIgnoreProperties
+@CriacaoCondutorValid()
 public record CondutorDTO(
-        Long id,
-        LocalDateTime dataRegistro,
         String nomeCompleto,
         Integer ddd,
         String telefone,
@@ -16,6 +16,7 @@ public record CondutorDTO(
         String bairro,
         String cidade,
         String uf,
+        @Email(message = "Email inválido")
         String email,
         String cpf
 ) {}

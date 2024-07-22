@@ -1,55 +1,23 @@
-package com.techchallege.parquimetro.entities;
+package com.techchallege.parquimetro.DTOs;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+import com.techchallege.parquimetro.entities.Veiculo;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
-@Entity
-@Table(name = "condutor")
-@JsonIgnoreProperties(ignoreUnknown=true)
-public class Condutor {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CondutorResponseDTO{
     private Long id;
-
-    @Column(name = "data_registro", insertable = false)
     private LocalDateTime dataRegistro;
-
-    @Column(name = "nome_completo")
     private String nomeCompleto;
-
-    @Column(name = "ddd")
     private Integer ddd;
-
-    @Column(name = "telefone")
     private String telefone;
-
-    @Column(name = "rua")
     private String rua;
-
-    @Column(name = "numero")
     private String numero;
-
-    @Column(name = "bairro")
     private String bairro;
-
-    @Column(name = "cidade")
     private String cidade;
-
-    @Column(name = "uf")
     private String uf;
-
-    @Column(name = "email", nullable = false)
     private String email;
-
-
-    @Column(name = "cpf")
     private String cpf;
-
-    @OneToMany(mappedBy = "idCondutor")
     private List<Veiculo> veiculos;
 
     public List<Veiculo> getVeiculos() {
@@ -154,18 +122,5 @@ public class Condutor {
 
     public void setUf(String uf) {
         this.uf = uf;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Condutor condutor = (Condutor) o;
-        return Objects.equals(id, condutor.id) && Objects.equals(dataRegistro, condutor.dataRegistro) && Objects.equals(nomeCompleto, condutor.nomeCompleto) && Objects.equals(ddd, condutor.ddd) && Objects.equals(telefone, condutor.telefone) && Objects.equals(rua, condutor.rua) && Objects.equals(numero, condutor.numero) && Objects.equals(bairro, condutor.bairro) && Objects.equals(cidade, condutor.cidade) && Objects.equals(uf, condutor.uf) && Objects.equals(email, condutor.email) && Objects.equals(cpf, condutor.cpf) && Objects.equals(veiculos, condutor.veiculos);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, dataRegistro, nomeCompleto, ddd, telefone, rua, numero, bairro, cidade, uf, email, cpf, veiculos);
     }
 }
