@@ -11,16 +11,15 @@ public class VeiculoResponseDTO {
     private String placa;
     private String modelo;
     private String marca;
-//    private Condutor condutor;
-//
-//
-//    public Condutor getCondutor() {
-//        return condutor;
-//    }
-//
-//    public void setCondutor(Condutor condutor) {
-//        this.condutor = condutor;
-//    }
+    private Long idCondutor;
+
+    public Long getIdCondutor() {
+        return idCondutor;
+    }
+
+    public void setIdCondutor(Long idCondutor) {
+        this.idCondutor = idCondutor;
+    }
 
     public LocalDateTime getDataRegistro() {
         return dataRegistro;
