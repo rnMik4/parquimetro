@@ -2,12 +2,14 @@ package com.techchallege.parquimetro.services.Impl;
 
 import com.techchallege.parquimetro.DTOs.CalculoTempoResponseDTO;
 import com.techchallege.parquimetro.DTOs.EstacionamentosDTO;
+import com.techchallege.parquimetro.DTOs.ReciboResponseDTO;
 import com.techchallege.parquimetro.entities.Estacionamentos;
+import com.techchallege.parquimetro.entities.FormasPagamento;
 import com.techchallege.parquimetro.entities.Periodo;
+import com.techchallege.parquimetro.entities.Veiculo;
 import com.techchallege.parquimetro.exceptions.ResourceNotFoundException;
 import com.techchallege.parquimetro.repositories.EstacionamentosRepository;
-import com.techchallege.parquimetro.services.EstacionamentosService;
-import com.techchallege.parquimetro.services.PeriodoService;
+import com.techchallege.parquimetro.services.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,12 +27,28 @@ public class EstacionamentosServiceImpl implements EstacionamentosService {
     @Autowired
     PeriodoService periodoService;
 
+    @Autowired
+    CondutorService condutorService;
+
+    @Autowired
+    FormasPagamentoService formasPagamentoService;
+
+    @Autowired
+    VeiculoService veiculoService;
+
     @Override
     public Estacionamentos salvarEstacionamento(EstacionamentosDTO estacionamento) {
         Estacionamentos save = new Estacionamentos();
         //verificar se ja existe um estacionamento em andamento
-        if(estacionamento.idPeriodo() == 1L && estacionamento.dataHoraFim() == null){
-            throw new ResourceNotFoundException("Estacionamento de Período Fixo exige uma data de Fim");
+        if(estacionamento.idPeriodo() == 1L){
+            if(estacionamento.dataHoraFim() == null){
+                throw new ResourceNotFoundException("Estacionamento de Período Fixo exige uma data de Fim");
+            }
+            //calcula o valor do período
+            Duration d = Duration.between(estacionamento.dataHoraInicio(), estacionamento.dataHoraFim());
+            Long tempo = d.toMinutes();
+            Periodo periodo = periodoService.findById(estacionamento.idPeriodo());
+            save.setValorTotal((tempo / 60) * periodo.getValor());
         }
         if(!estacionamentoAtivo(estacionamento.idVeiculo())){
 
@@ -115,6 +133,28 @@ public class EstacionamentosServiceImpl implements EstacionamentosService {
         return estacionamentosRepository.save(estacionamento);
     }
 
+    @Override
+    public ReciboResponseDTO gerarRecibo(Long idEstacionamento) {
+        Estacionamentos estacionamento = buscarEstacionamentoPorId(idEstacionamento);
+        if(estacionamento.getDataHoraFim() == null){
+            throw new ResourceNotFoundException("Este estacionamento não foi encerrado");
+        }
+
+        ReciboResponseDTO recibo = new ReciboResponseDTO();
+        recibo.setDataInicio(estacionamento.getDataHoraInicio());
+        recibo.setDataFim(estacionamento.getDataHoraFim());
+        recibo.setValorTotal(estacionamento.getValorTotal());
+        Duration d = Duration.between(estacionamento.getDataHoraInicio(), estacionamento.getDataHoraFim());
+        Long tempo = d.toMinutes();
+        recibo.setTempoEstacionado(tempo);
+        recibo.setPeriodo(periodoService.findById(estacionamento.getIdPeriodo()));
+        Veiculo veiculo = veiculoService.getVeiculoById(estacionamento.getIdVeiculo());
+        recibo.setVeiculo(veiculo);
+        recibo.setCondutor(condutorService.getCondutorById(veiculo.getIdCondutor()));
+        recibo.setFormaPagamento(formasPagamentoService.getById(estacionamento.getIdFormasPagamento()));
+        return recibo;
+    }
+
 
     private Boolean estacionamentoAtivo(Long idVeiculo){
         Estacionamentos estacionamento = new Estacionamentos();
@@ -132,4 +172,5 @@ public class EstacionamentosServiceImpl implements EstacionamentosService {
 
         return false;
     }
+
 }

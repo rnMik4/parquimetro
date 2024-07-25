@@ -2,6 +2,7 @@ package com.techchallege.parquimetro.controllers;
 
 import com.techchallege.parquimetro.DTOs.CalculoTempoResponseDTO;
 import com.techchallege.parquimetro.DTOs.EstacionamentosDTO;
+import com.techchallege.parquimetro.DTOs.ReciboResponseDTO;
 import com.techchallege.parquimetro.entities.Estacionamentos;
 import com.techchallege.parquimetro.services.EstacionamentosService;
 import com.techchallege.parquimetro.services.GenericMapper;
@@ -48,5 +49,10 @@ public class EstacionamentosController {
     @GetMapping("/tempoestacionamento/{id}")
     public ResponseEntity<CalculoTempoResponseDTO> tempoEstacionamento(@PathVariable("id") Long id) {
         return ResponseEntity.ok().body(service.calcularTempo(id));
+    }
+
+    @GetMapping("/recibo/{id}")
+    public ResponseEntity<ReciboResponseDTO> reciboEstacionamento(@PathVariable("id") Long id) {
+        return ResponseEntity.ok().body(service.gerarRecibo(id));
     }
 }
